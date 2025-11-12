@@ -3,180 +3,489 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Solaria — Ordering System</title>
+  <title>Solaria Cafe</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap');
+
     :root {
       --gold: #d4af37;
       --gold-strong: #c79e2d;
-      --bg: #0b0b0b;
-      --card: #111214;
+      --gold-light: #f4e4b0;
+      --bg: #0f0f0f;
+      --card: #1a1a1a;
       --muted: #bfbfbf;
-      --accent-border: rgba(212,175,55,0.18);
+      --cream: #f5f5dc;
     }
+
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      font-family: Inter, system-ui, sans-serif;
-      background: var(--bg);
+      font-family: 'Inter', system-ui, sans-serif;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1410 100%);
       color: #fff;
+      min-height: 100vh;
     }
 
-    .container { max-width: 1100px; margin: 0 auto; padding: 18px; }
-
-    h1 {
-      color: var(--gold);
-      font-weight: bold;
+    /* Hero Section with Logo */
+    .hero {
+      background: linear-gradient(180deg, rgba(212,175,55,0.08) 0%, transparent 100%);
+      padding: 24px 18px 32px;
       text-align: center;
+      border-bottom: 2px solid rgba(212,175,55,0.15);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(212,175,55,0.03) 0%, transparent 70%);
+      animation: pulse 8s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+
+    .logo-container {
+      position: relative;
+      z-index: 2;
       margin-bottom: 16px;
     }
 
-    /* MENU DESIGN */
+    .logo {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto;
+      border-radius: 50%;
+      box-shadow: 0 8px 32px rgba(212,175,55,0.3);
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .cafe-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--gold);
+      margin: 12px 0 8px;
+      text-shadow: 0 2px 12px rgba(212,175,55,0.4);
+      letter-spacing: 2px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .cafe-subtitle {
+      color: var(--gold-light);
+      font-size: 0.95rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 500;
+      position: relative;
+      z-index: 2;
+    }
+
+    .container { 
+      max-width: 1200px; 
+      margin: 0 auto; 
+      padding: 18px;
+    }
+
+    /* Menu Design */
     .menu-section {
-      background: rgba(255,255,255,0.02);
-      border: 1px solid var(--accent-border);
-      border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 10px;
+      background: linear-gradient(145deg, rgba(26,26,26,0.9), rgba(20,20,20,0.9));
+      border: 1px solid rgba(212,175,55,0.2);
+      border-radius: 16px;
+      padding: 0;
+      margin-bottom: 20px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      backdrop-filter: blur(10px);
     }
 
     .menu-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: linear-gradient(90deg, rgba(212,175,55,0.06), transparent);
-      padding: 10px;
-      border-radius: 8px;
+      background: linear-gradient(90deg, rgba(212,175,55,0.15), rgba(212,175,55,0.05));
+      padding: 18px 20px;
       cursor: pointer;
       font-weight: 600;
       color: var(--gold);
+      font-size: 1.3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease;
+      border-bottom: 1px solid rgba(212,175,55,0.1);
     }
 
-    .menu-subgroup { margin-top: 10px; }
-    .items-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    @media(min-width:768px){ .items-grid { grid-template-columns: repeat(3, 1fr); } }
+    .menu-header:hover {
+      background: linear-gradient(90deg, rgba(212,175,55,0.2), rgba(212,175,55,0.08));
+    }
+
+    .menu-icon {
+      transition: transform 0.3s ease;
+      font-size: 1.2rem;
+    }
+
+    .menu-content {
+      padding: 20px;
+    }
+
+    .menu-subgroup { 
+      margin-bottom: 24px;
+    }
+
+    .menu-subgroup:last-child {
+      margin-bottom: 0;
+    }
+
+    .subgroup-title {
+      color: var(--gold-light);
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed rgba(212,175,55,0.2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .subgroup-title::before {
+      content: '☕';
+      font-size: 1.2rem;
+    }
+
+    .items-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 14px;
+    }
 
     .menu-item {
-      background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.005));
-      border: 1px solid rgba(212,175,55,0.08);
-      border-radius: 10px;
-      padding: 10px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid rgba(212,175,55,0.15);
+      border-radius: 12px;
+      padding: 14px;
       text-align: center;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
     }
-    .menu-item h4 { color: #fff; font-weight: 600; font-size: 0.95rem; }
+
+    .menu-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .menu-item:hover {
+      transform: translateY(-4px);
+      border-color: rgba(212,175,55,0.4);
+      box-shadow: 0 8px 24px rgba(212,175,55,0.15);
+    }
+
+    .menu-item:hover::before {
+      opacity: 1;
+    }
+
+    .menu-item h4 { 
+      color: #fff; 
+      font-weight: 600; 
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+      line-height: 1.3;
+      min-height: 38px;
+    }
 
     select, input[type="number"] {
       width: 100%;
-      padding: 6px;
-      border-radius: 6px;
-      border: 1px solid #333;
-      background: #141414;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(212,175,55,0.2);
+      background: rgba(10,10,10,0.5);
       color: white;
       text-align: center;
+      margin-bottom: 8px;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+    }
+
+    select:focus, input[type="number"]:focus {
+      outline: none;
+      border-color: var(--gold);
+      background: rgba(10,10,10,0.8);
     }
 
     .btn-add {
-      background: var(--gold);
+      background: linear-gradient(135deg, var(--gold), var(--gold-strong));
       color: #0b0b0b;
-      font-weight: bold;
-      border-radius: 6px;
-      padding: 6px;
-      margin-top: 6px;
+      font-weight: 700;
+      border-radius: 8px;
+      padding: 10px;
       width: 100%;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 0.85rem;
+      box-shadow: 0 4px 12px rgba(212,175,55,0.3);
     }
-    .btn-add:hover { background: var(--gold-strong); }
 
-    /* FIXED ORDER BAR */
+    .btn-add:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(212,175,55,0.5);
+    }
+
+    .btn-add:active {
+      transform: scale(0.98);
+    }
+
+    /* Fixed Order Bar */
     #order-bar {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      background: rgba(10,10,10,0.97);
-      border-top: 1px solid rgba(212,175,55,0.2);
-      padding: 10px 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+      background: linear-gradient(180deg, rgba(10,10,10,0.95), rgba(10,10,10,0.98));
+      border-top: 2px solid rgba(212,175,55,0.3);
+      padding: 16px;
       z-index: 50;
-      box-shadow: 0 -2px 20px rgba(0,0,0,0.7);
-      max-height: 45vh;
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.8);
+      backdrop-filter: blur(20px);
+    }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(212,175,55,0.2);
+    }
+
+    .order-title {
+      color: var(--gold);
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 1px;
+    }
+
+    .order-count {
+      background: var(--gold);
+      color: black;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
     }
 
     #order-list {
       overflow-y: auto;
-      max-height: 22vh;
-      padding-right: 6px;
+      max-height: 25vh;
+      padding-right: 8px;
+      margin-bottom: 12px;
+    }
+
+    #order-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #order-list::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+    }
+
+    #order-list::-webkit-scrollbar-thumb {
+      background: var(--gold);
+      border-radius: 10px;
     }
 
     .order-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 6px 8px;
-      background: #111;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      margin-bottom: 4px;
+      padding: 10px 12px;
+      background: rgba(26,26,26,0.8);
+      border: 1px solid rgba(212,175,55,0.15);
+      border-radius: 10px;
+      margin-bottom: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .order-item:hover {
+      background: rgba(26,26,26,1);
+      border-color: rgba(212,175,55,0.3);
+    }
+
+    .order-item-info {
+      flex: 1;
+    }
+
+    .order-item-name {
+      font-weight: 600;
+      color: white;
+      margin-bottom: 2px;
+    }
+
+    .order-item-price {
+      font-size: 0.85rem;
+      color: var(--gold-light);
+    }
+
+    .order-item-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .order-item input {
-      width: 55px;
-      background: #1a1a1a;
-      border: 1px solid #333;
+      width: 60px;
+      background: rgba(10,10,10,0.8);
+      border: 1px solid rgba(212,175,55,0.2);
       color: white;
       text-align: center;
-      border-radius: 4px;
-      padding: 3px;
+      border-radius: 6px;
+      padding: 6px;
+      font-weight: 600;
     }
 
     .btn-remove {
-      background: #b9322b;
+      background: #c72c2c;
       color: white;
-      border-radius: 4px;
-      padding: 4px 8px;
+      border-radius: 6px;
+      padding: 6px 10px;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.3s ease;
+    }
+
+    .btn-remove:hover {
+      background: #e14d4d;
+      transform: scale(1.1);
     }
 
     .bottom-controls {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-top: 1px solid rgba(212,175,55,0.15);
-      padding-top: 6px;
+      gap: 12px;
+      padding-top: 12px;
+      border-top: 2px solid rgba(212,175,55,0.2);
     }
 
     .total {
       color: var(--gold);
-      font-size: 1.1rem;
-      font-weight: bold;
+      font-size: 1.4rem;
+      font-weight: 700;
+      text-shadow: 0 2px 8px rgba(212,175,55,0.3);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
     }
 
     .btn-clear, .btn-checkout {
-      border-radius: 6px;
-      padding: 6px 10px;
-      font-weight: 600;
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 0.9rem;
     }
 
-    .btn-clear { background: #b9322b; color: white; }
-    .btn-checkout { background: var(--gold); color: black; }
-    .btn-clear:hover { background: #e14d4d; }
-    .btn-checkout:hover { background: var(--gold-strong); }
+    .btn-clear { 
+      background: linear-gradient(135deg, #b9322b, #8a1f1f);
+      color: white;
+      box-shadow: 0 4px 12px rgba(185,50,43,0.3);
+    }
 
-    main { padding-bottom: 48vh; } /* Prevents overlap with fixed order bar */
+    .btn-checkout { 
+      background: linear-gradient(135deg, var(--gold), var(--gold-strong));
+      color: black;
+      box-shadow: 0 4px 12px rgba(212,175,55,0.4);
+    }
+
+    .btn-clear:hover { 
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(185,50,43,0.5);
+    }
+
+    .btn-checkout:hover { 
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(212,175,55,0.6);
+    }
+
+    .btn-checkout:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    main { padding-bottom: 50vh; }
+
+    .empty-order {
+      text-align: center;
+      color: #666;
+      padding: 20px;
+      font-style: italic;
+    }
+
+    @media(max-width: 640px) {
+      .cafe-title { font-size: 2rem; }
+      .items-grid { grid-template-columns: repeat(2, 1fr); }
+      .total { font-size: 1.2rem; }
+    }
   </style>
 </head>
 <body>
+  <!-- Hero Section -->
+  <div class="hero">
+    <div class="logo-container">
+      <img src="logo.jpg" alt="Solaria Logo" class="logo">
+    </div>
+    <h1 class="cafe-title">SOLARIA</h1>
+    <p class="cafe-subtitle">Kitchen & Cafe</p>
+  </div>
+
   <div class="container">
-    <h1>☕ Solaria — Ordering System</h1>
     <main id="menu-container"></main>
   </div>
 
-  <!-- FIXED ORDER BAR -->
+  <!-- Fixed Order Bar -->
   <div id="order-bar">
-    <div id="order-list"></div>
+    <div class="order-header">
+      <span class="order-title">YOUR ORDER</span>
+      <span class="order-count"><span id="item-count">0</span> items</span>
+    </div>
+    <div id="order-list">
+      <div class="empty-order">Your cart is empty</div>
+    </div>
     <div class="bottom-controls">
-      <div class="total">Total: ₱<span id="total">0.00</span></div>
-      <div class="flex gap-2">
+      <div class="total">₱<span id="total">0.00</span></div>
+      <div class="action-buttons">
         <button id="clear" class="btn-clear">Clear</button>
         <button id="checkout" class="btn-checkout">Checkout</button>
       </div>
@@ -185,14 +494,14 @@
 
   <script>
     const menus = [
-       {
-        name: "🍹 Beverages Menu",
+      {
+        name: "🍹 Beverages",
         subgroups: {
           "Espresso Based (Iced)": [
-            { id: "spanish_12", name: "Spanish Latte (Iced)", prices: { "12oz": 69, "16oz": 79 } },
-            { id: "caramel_iced_12", name: "Caramel Macchiato (Iced)", prices: { "12oz": 79, "16oz": 89 } },
-            { id: "mocha_iced", name: "Mocha (Iced)", prices: { "12oz": 79, "16oz": 89 } },
-            { id: "affogato_iced", name: "Affogato Latte (Iced)", prices: { "12oz": 89, "16oz": 99 } },
+            { id: "spanish_12", name: "Spanish Latte", prices: { "12oz": 69, "16oz": 79 } },
+            { id: "caramel_iced_12", name: "Caramel Macchiato", prices: { "12oz": 79, "16oz": 89 } },
+            { id: "mocha_iced", name: "Mocha", prices: { "12oz": 79, "16oz": 89 } },
+            { id: "affogato_iced", name: "Affogato Latte", prices: { "12oz": 89, "16oz": 99 } },
           ],
           "Espresso Based (Hot)": [
             { id: "hot_americano", name: "Hot Americano", prices: { "8oz": 59 } },
@@ -200,23 +509,21 @@
           ],
           "Non-Coffee": [
             { id: "milkyberry", name: "Milky Berry", prices: { "12oz": 59, "16oz": 69 } },
-            { id: "classic_matcha", name: "Classic Matcha (unsweetened)", prices: { "12oz": 79, "16oz": 89 } },
+            { id: "classic_matcha", name: "Classic Matcha", prices: { "12oz": 79, "16oz": 89 } },
             { id: "creamy_matcha", name: "Creamy Matcha Latte", prices: { "12oz": 89, "16oz": 99 } },
           ],
           "Frappe Series": [
-            { id: "strawberry_bliss", name: "Strawberry Bliss (Frappe)", prices: { "16oz": 109 } },
-            { id: "frappe_caramel", name: "Caramel Macchiato (Frappe)", prices: { "16oz": 119 } },
-            { id: "java_chips", name: "Java Chips (Frappe)", prices: { "16oz": 119 } },
-            { id: "choco_hazelnut", name: "Choco Hazelnut (Frappe)", prices: { "16oz": 129 } },
-            { id: "kitkat_frappe", name: "KitKat (Frappe)", prices: { "16oz": 139 } },
-            { id: "biscoff_frappe", name: "Biscoff (Frappe)", prices: { "16oz": 149 } },
+            { id: "strawberry_bliss", name: "Strawberry Bliss", prices: { "16oz": 109 } },
+            { id: "frappe_caramel", name: "Caramel Macchiato", prices: { "16oz": 119 } },
+            { id: "java_chips", name: "Java Chips", prices: { "16oz": 119 } },
+            { id: "choco_hazelnut", name: "Choco Hazelnut", prices: { "16oz": 129 } },
+            { id: "kitkat_frappe", name: "KitKat", prices: { "16oz": 139 } },
+            { id: "biscoff_frappe", name: "Biscoff", prices: { "16oz": 149 } },
           ],
         },
       },
-
-      // SOLARIA'S MENU
       {
-        name: "🍛 Solaria’s Menu",
+        name: "🍛 Food Menu",
         subgroups: {
           "Silog Meals": [
             { id: "longsilog", name: "Longsilog", prices: { regular: 89 } },
@@ -233,10 +540,10 @@
             { id: "spicy_tuna", name: "Spicy Tuna Pasta", prices: { regular: 89 } },
             { id: "creamy_spaghetti", name: "Creamy Spaghetti", prices: { regular: 99 } },
           ],
-          "Beef / Burger / Patty": [
+          "Beef / Burger": [
             { id: "burger_egg", name: "Burger Steak w/ Egg", prices: { regular: 99 } },
-            { id: "double_patty", name: "Double Patty Burger Steak", prices: { regular: 129 } },
-            { id: "double_patty_egg", name: "Double Patty Burger Steak w/ Egg", prices: { regular: 139 } },
+            { id: "double_patty", name: "Double Patty Burger", prices: { regular: 129 } },
+            { id: "double_patty_egg", name: "Double Patty w/ Egg", prices: { regular: 139 } },
           ],
         },
       },
@@ -245,25 +552,27 @@
     const container = document.getElementById("menu-container");
     const orderListEl = document.getElementById("order-list");
     const totalEl = document.getElementById("total");
+    const itemCountEl = document.getElementById("item-count");
     let order = {};
 
     // Build Menu
     menus.forEach((menu, i) => {
       const section = document.createElement("section");
       section.className = "menu-section";
+      
       const header = document.createElement("div");
       header.className = "menu-header";
-      header.innerHTML = `${menu.name}<span id="icon-${i}">▼</span>`;
+      header.innerHTML = `<span>${menu.name}</span><span class="menu-icon" id="icon-${i}">▼</span>`;
       section.appendChild(header);
 
       const content = document.createElement("div");
+      content.className = "menu-content";
       content.style.display = "none";
-      content.style.marginTop = "10px";
 
       Object.entries(menu.subgroups).forEach(([sub, items]) => {
         const subDiv = document.createElement("div");
         subDiv.className = "menu-subgroup";
-        subDiv.innerHTML = `<h3 style="color:var(--gold);margin-bottom:4px;">${sub}</h3>`;
+        subDiv.innerHTML = `<h3 class="subgroup-title">${sub}</h3>`;
         const grid = document.createElement("div");
         grid.className = "items-grid";
 
@@ -277,7 +586,7 @@
             <h4>${item.name}</h4>
             <select id="size-${item.id}">${options}</select>
             <input id="qty-${item.id}" type="number" min="1" value="1">
-            <button class="btn-add" onclick="addToOrder('${item.id}','${item.name}')">Add</button>
+            <button class="btn-add" onclick="addToOrder('${item.id}','${item.name}')">Add to Order</button>
           `;
           grid.appendChild(card);
         });
@@ -289,7 +598,9 @@
       header.addEventListener("click", () => {
         const visible = content.style.display === "block";
         content.style.display = visible ? "none" : "block";
-        document.getElementById(`icon-${i}`).textContent = visible ? "▼" : "▲";
+        const icon = document.getElementById(`icon-${i}`);
+        icon.textContent = visible ? "▼" : "▲";
+        icon.style.transform = visible ? "rotate(0deg)" : "rotate(180deg)";
       });
 
       section.appendChild(content);
@@ -311,24 +622,34 @@
     function renderOrder() {
       orderListEl.innerHTML = "";
       let total = 0;
-      for (const key in order) {
-        const item = order[key];
-        total += item.price * item.qty;
-        const div = document.createElement("div");
-        div.className = "order-item";
-        div.innerHTML = `
-          <div>
-            <div>${item.name}</div>
-            <div style="font-size:0.8rem;color:#aaa;">₱${item.price}</div>
-          </div>
-          <div class="flex items-center gap-2">
-            <input type="number" min="1" value="${item.qty}" onchange="updateQty('${key}', this.value)">
-            <button class="btn-remove" onclick="removeItem('${key}')">✕</button>
-          </div>
-        `;
-        orderListEl.appendChild(div);
+      let itemCount = 0;
+      
+      const items = Object.entries(order);
+      
+      if (items.length === 0) {
+        orderListEl.innerHTML = '<div class="empty-order">Your cart is empty</div>';
+      } else {
+        items.forEach(([key, item]) => {
+          total += item.price * item.qty;
+          itemCount += item.qty;
+          const div = document.createElement("div");
+          div.className = "order-item";
+          div.innerHTML = `
+            <div class="order-item-info">
+              <div class="order-item-name">${item.name}</div>
+              <div class="order-item-price">₱${item.price} each</div>
+            </div>
+            <div class="order-item-controls">
+              <input type="number" min="1" value="${item.qty}" onchange="updateQty('${key}', this.value)">
+              <button class="btn-remove" onclick="removeItem('${key}')">✕</button>
+            </div>
+          `;
+          orderListEl.appendChild(div);
+        });
       }
+      
       totalEl.textContent = total.toFixed(2);
+      itemCountEl.textContent = itemCount;
     }
 
     window.updateQty = (key, val) => {
@@ -343,39 +664,58 @@
       renderOrder();
     };
 
-    document.getElementById("clear").onclick = () => { order = {}; renderOrder(); };
-   document.getElementById("checkout").onclick = async () => {
-  if (Object.keys(order).length === 0) {
-    alert("No items to checkout!");
-    return;
-  }
+    document.getElementById("clear").onclick = () => { 
+      if (Object.keys(order).length > 0) {
+        if (confirm("Clear all items from your order?")) {
+          order = {}; 
+          renderOrder(); 
+        }
+      }
+    };
 
-  const items = Object.values(order).map(it => ({
-    name: it.name,
-    size: it.name.match(/\((.*?)\)/)?.[1] || "N/A",
-    qty: it.qty,
-    price: it.price
-  }));
+    // Checkout
+    const checkoutBtn = document.getElementById("checkout");
+    checkoutBtn.onclick = async () => {
+      if (Object.keys(order).length === 0) {
+        alert("🛒 Your cart is empty! Please add items first.");
+        return;
+      }
 
-  const payload = { items };
+      checkoutBtn.disabled = true;
+      const originalText = checkoutBtn.textContent;
+      checkoutBtn.textContent = "Processing...";
 
-  try {
-    const response = await fetch("https://script.google.com/macros/s/AKfycbxV0IuZRcyAzVtVQa8qjTkk0X3WxI34o9h4lu-SQu2Vkx95VPkrvqo42DdEOiVxW6wC/exec", {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
+      const items = Object.values(order).map(it => ({
+        name: it.name,
+        size: it.name.match(/\((.*?)\)/)?.[1] || "N/A",
+        qty: it.qty,
+        price: it.price
+      }));
 
-    alert("✅ Order saved to Google Sheet!");
-    order = {};
+      const payload = { items };
+
+      try {
+        const response = await fetch("https://script.google.com/macros/s/AKfycbxV0IuZRcyAzVtVQa8qjTkk0X3WxI34o9h4lu-SQu2Vkx95VPkrvqo42DdEOiVxW6wC/exec", {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        alert("✅ Order placed successfully! Thank you!");
+        order = {};
+        renderOrder();
+      } catch (err) {
+        alert("❌ Failed to place order. Please try again.");
+        console.error(err);
+      }
+
+      checkoutBtn.disabled = false;
+      checkoutBtn.textContent = originalText;
+    };
+
+    // Initial render
     renderOrder();
-  } catch (err) {
-    alert("❌ Failed to save order. Check your Apps Script deployment.");
-    console.error(err);
-  }
-};
-
   </script>
 </body>
 </html>
