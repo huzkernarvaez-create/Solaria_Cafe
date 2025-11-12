@@ -1,273 +1,349 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Solaria Ordering System</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body {
-      background-color: #111;
-      color: #f9f9f9;
-      font-family: 'Poppins', sans-serif;
-    }
-
-    h1, h2, h3 {
-      color: #d4af37;
-      letter-spacing: 1px;
-    }
-
-    .menu-section {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(212, 175, 55, 0.3);
-      border-radius: 12px;
-      padding: 1.2rem;
-      transition: all 0.3s ease;
-    }
-
-    .menu-header {
-      background: linear-gradient(90deg, rgba(212, 175, 55, 0.3), transparent);
-      color: #f9f9f9;
-      padding: 10px 14px;
-      border-radius: 10px;
-      font-size: 1.2rem;
-      font-weight: 600;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-    }
-
-    .menu-item {
-      background: #1b1b1b;
-      border: 1px solid rgba(212, 175, 55, 0.2);
-      border-radius: 10px;
-      padding: 12px;
-      text-align: center;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .menu-item:hover {
-      transform: scale(1.03);
-      box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
-    }
-
-    select, input {
-      background: #222;
-      color: white;
-      border: 1px solid #555;
-      border-radius: 6px;
-      padding: 6px;
-    }
-
-    select:focus, input:focus {
-      outline: none;
-      border-color: #d4af37;
-    }
-
-    button {
-      transition: all 0.3s ease;
-    }
-
-    .add-btn {
-      background: #d4af37;
-      color: #111;
-      font-weight: 600;
-      width: 100%;
-    }
-
-    .add-btn:hover {
-      background: #c49b28;
-    }
-
-    .remove-btn {
-      background: #c0392b;
-    }
-
-    .remove-btn:hover {
-      background: #e74c3c;
-    }
-
-    .clear-btn {
-      background: #d4af37;
-      color: #111;
-      font-weight: bold;
-      width: 100%;
-    }
-
-    .order-card {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(212, 175, 55, 0.3);
-      border-radius: 12px;
-      position: sticky;
-      bottom: 10px;
-      backdrop-filter: blur(10px);
-    }
-
-    @media (max-width: 768px) {
-      h1 { font-size: 1.8rem; }
-      .menu-header { font-size: 1rem; padding: 8px 10px; }
-      .menu-item { font-size: 0.9rem; }
-      .add-btn, .clear-btn { font-size: 0.9rem; padding: 8px; }
-    }
-  </style>
-</head>
-
-<body class="min-h-screen">
-  <div class="max-w-5xl mx-auto p-4 sm:p-6">
-    <h1 class="text-3xl sm:text-4xl font-bold text-center mb-8">☕ Solaria Ordering System</h1>
-
-    <div id="menu-container" class="space-y-6"></div>
-
-    <!-- ORDER SUMMARY -->
-    <div class="mt-8 p-4 order-card shadow-lg rounded-lg">
-      <h2 class="text-xl font-semibold mb-3">🧾 Order Summary</h2>
-      <ul id="order-list" class="mb-3 text-gray-200 space-y-2"></ul>
-      <p class="text-lg font-bold text-gold">Total: ₱<span id="total">0</span></p>
-      <button id="clear-order" class="mt-3 clear-btn px-4 py-2 rounded">Clear Order</button>
-    </div>
-  </div>
-
-  <script>
-    const menus = [
-      {
-        name: "🍹 Beverages Menu",
-        subgroups: {
-          "Espresso Based (Iced)": [
-            { id: "spanishlatte", name: "Spanish Latte", prices: { "12oz": 69, "16oz": 79 } },
-            { id: "caramelmacchiato", name: "Caramel Macchiato", prices: { "12oz": 79, "16oz": 89 } },
-          ],
-          "Non-Coffee": [
-            { id: "milkyberry", name: "Milky Berry", prices: { "12oz": 59, "16oz": 69 } },
-            { id: "matcha", name: "Creamy Matcha", prices: { "12oz": 89, "16oz": 99 } },
-          ],
-        },
-      },
-      {
-        name: "🍛 Solaria’s Menu",
-        subgroups: {
-          "Silog": [
-            { id: "longsilog", name: "Longsilog", prices: { regular: 89 } },
-            { id: "tapsilog", name: "Tapsilog", prices: { regular: 109 } },
-          ],
-          "Pasta": [
-            { id: "spicytuna", name: "Spicy Tuna Pasta", prices: { regular: 89 } },
-            { id: "creamypasta", name: "Creamy Spaghetti", prices: { regular: 99 } },
-          ],
-        },
-      },
-    ];
-
-    const container = document.getElementById("menu-container");
-    const orderList = document.getElementById("order-list");
-    const totalEl = document.getElementById("total");
-    const clearOrderBtn = document.getElementById("clear-order");
-    let order = {};
-
-    menus.forEach((menu, i) => {
-      const section = document.createElement("div");
-      section.className = "menu-section";
-
-      const header = document.createElement("button");
-      header.className = "menu-header";
-      header.innerHTML = `<span>${menu.name}</span><span id="icon-${i}">▼</span>`;
-
-      const content = document.createElement("div");
-      content.className = "space-y-4 pl-2 sm:pl-4";
-      content.style.display = "none";
-
-      Object.entries(menu.subgroups).forEach(([subName, items]) => {
-        const subgroupDiv = document.createElement("div");
-        subgroupDiv.innerHTML = `<h3 class="text-lg font-semibold mt-3">${subName}</h3>`;
-        const itemsDiv = document.createElement("div");
-        itemsDiv.className = "grid grid-cols-2 sm:grid-cols-3 gap-3 mt-2";
-
-        items.forEach((item) => {
-          const card = document.createElement("div");
-          card.className = "menu-item";
-
-          const sizeOptions = Object.entries(item.prices)
-            .map(([size, price]) => `<option value="${price}">${size} - ₱${price}</option>`)
-            .join("");
-
-          card.innerHTML = `
-            <h4 class="font-medium text-gold mb-1">${item.name}</h4>
-            <select id="size-${item.id}" class="w-full mb-2 text-sm">${sizeOptions}</select>
-            <input id="qty-${item.id}" type="number" min="1" value="1" class="w-full text-center mb-2 text-black">
-            <button onclick="addToOrder('${item.id}', '${item.name}')" class="add-btn py-1 rounded">Add</button>
-          `;
-          itemsDiv.appendChild(card);
-        });
-
-        subgroupDiv.appendChild(itemsDiv);
-        content.appendChild(subgroupDiv);
-      });
-
-      header.addEventListener("click", () => {
-        const visible = content.style.display === "block";
-        content.style.display = visible ? "none" : "block";
-        document.getElementById(`icon-${i}`).textContent = visible ? "▼" : "▲";
-      });
-
-      section.appendChild(header);
-      section.appendChild(content);
-      container.appendChild(section);
-    });
-
-    function addToOrder(id, name) {
-      const sizeSelect = document.getElementById(`size-${id}`);
-      const price = parseInt(sizeSelect.value);
-      const sizeLabel = sizeSelect.options[sizeSelect.selectedIndex].text.split(" - ")[0];
-      const qty = parseInt(document.getElementById(`qty-${id}`).value) || 1;
-      const key = id + "_" + sizeLabel;
-      if (!order[key]) order[key] = { name: `${name} (${sizeLabel})`, price, qty };
-      else order[key].qty += qty;
-      renderOrder();
-    }
-
-    function renderOrder() {
-      orderList.innerHTML = "";
-      let total = 0;
-
-      for (const key in order) {
-        const { name, price, qty } = order[key];
-        total += price * qty;
-
-        const li = document.createElement("li");
-        li.className = "flex justify-between items-center bg-[#1a1a1a] p-2 rounded border border-yellow-700";
-
-        li.innerHTML = `
-          <div>
-            <span class="font-medium">${name}</span><br>
-            <span class="text-sm text-gray-400">₱${price} each</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <input type="number" min="1" value="${qty}" class="w-12 text-center border rounded bg-[#222] text-white"
-              onchange="updateQuantity('${key}', this.value)">
-            <button onclick="removeItem('${key}')" class="remove-btn px-2 py-1 rounded">✕</button>
-          </div>
-        `;
-        orderList.appendChild(li);
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Solaria Menu — Ordering System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Theme (black + gold) */
+      :root {
+        --gold: #d4af37;
+        --bg: #0f0f10;
+        --card: #141414;
+        --muted: #bdbdbd;
+        --accent-border: rgba(212,175,55,0.22);
       }
-      totalEl.textContent = total;
-    }
-
-    function updateQuantity(key, newQty) {
-      const qty = parseInt(newQty);
-      if (qty <= 0) delete order[key];
-      else order[key].qty = qty;
-      renderOrder();
-    }
-
-    function removeItem(key) {
-      delete order[key];
-      renderOrder();
-    }
-
-    clearOrderBtn.addEventListener("click", () => {
-      order = {};
-      renderOrder();
-    });
-  </script>
-</body>
-</html>
+      body {
+        margin: 0;
+        font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+        background: var(--bg);
+        color: #fff;
+        -webkit-font-smoothing:antialiased;
+        -moz-osx-font-smoothing:grayscale;
+      }
+  
+      .container { max-width: 1100px; margin: 0 auto; padding: 18px; }
+  
+      h1,h2,h3 { color: var(--gold); letter-spacing: .6px; }
+  
+      .menu-section {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--accent-border);
+        border-radius: 12px;
+        padding: 16px;
+        transition: box-shadow .18s ease, transform .12s ease;
+      }
+      .menu-section:hover { box-shadow: 0 6px 18px rgba(0,0,0,0.6); transform: translateY(-2px); }
+  
+      .menu-header {
+        display:flex; justify-content:space-between; align-items:center;
+        padding: 10px; border-radius:8px;
+        background: linear-gradient(90deg, rgba(212,175,55,0.06), transparent);
+        cursor:pointer;
+        font-weight:600;
+      }
+  
+      .menu-subgroup { margin-top:12px; }
+      .items-grid { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:12px; }
+      @media(min-width:768px){ .items-grid { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+  
+      .menu-item {
+        background: linear-gradient(180deg, rgba(255,255,255,0.012), rgba(255,255,255,0.01));
+        border: 1px solid rgba(212,175,55,0.12);
+        padding: 12px; border-radius:10px; text-align:center;
+      }
+      .menu-item h4 { color: var(--gold); margin-bottom:6px; font-weight:600; }
+  
+      select, input[type="number"] {
+        width:100%; padding:8px; border-radius:8px; border:1px solid #333; background:#101010; color:#fff;
+      }
+      select:focus, input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 4px rgba(212,175,55,0.06); }
+  
+      .btn {
+        display:inline-block; padding:8px 10px; border-radius:8px; font-weight:600; cursor:pointer; border: none;
+      }
+      .btn-add { background: var(--gold); color:#101010; width:100%; }
+      .btn-add:hover { background: #c79e2d; }
+  
+      .order-card {
+        margin-top:18px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--accent-border);
+        padding:12px; border-radius:10px;
+        position: sticky; bottom: 12px;
+      }
+  
+      .order-item {
+        display:flex; justify-content:space-between; align-items:center; gap:12px;
+        background:#111; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.02);
+      }
+      .order-item .meta { font-size:14px; color:var(--muted); }
+  
+      .btn-remove { background:#b9322b; color:white; padding:6px 8px; border-radius:8px; }
+      .btn-remove:hover { background:#e14d4d; }
+  
+      .btn-clear { background: var(--gold); color:#111; font-weight:700; padding:10px 12px; border-radius:8px; width:100%; }
+      .btn-clear:hover { background:#c79e2d; }
+  
+      .small { font-size:13px; color:var(--muted); }
+  
+      /* small screen adjustments */
+      @media(max-width:640px){
+        .container { padding:12px; }
+        .items-grid { grid-template-columns: repeat(2,1fr); gap:10px; }
+        .menu-header { font-size:15px; padding:8px; }
+        h1 { font-size:20px; }
+        .order-card { position: fixed; left: 12px; right:12px; bottom:12px; z-index:80; }
+        main { padding-bottom:120px; } /* leave space for sticky order */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="mb-4">
+        <h1 class="text-2xl text-center font-bold">☕ Solaria — Ordering System</h1>
+      </header>
+  
+      <main id="main-area" class="space-y-4">
+        <div id="menu-container"></div>
+  
+        <!-- order summary -->
+        <div class="order-card" id="order-card">
+          <h2 class="text-lg font-semibold">🧾 Order Summary</h2>
+          <ul id="order-list" class="mt-3 space-y-2"></ul>
+          <div class="flex justify-between items-center mt-3">
+            <div class="text-sm small">Total</div>
+            <div class="text-lg font-bold">₱<span id="total">0</span></div>
+          </div>
+          <div class="mt-3">
+            <button id="clear-order" class="btn-clear">Clear Order</button>
+          </div>
+        </div>
+      </main>
+    </div>
+  
+    <script>
+      /**********************
+       * Menu data (complete)
+       * This list is built from the images + earlier lists.
+       **********************/
+      const menus = [
+        // BEVERAGES
+        {
+          name: "🍹 Beverages Menu",
+          subgroups: {
+            "Espresso Based (Iced)": [
+              { id: "spanish_12", name: "Spanish Latte (Iced)", prices: { "12oz": 69, "16oz": 79 } },
+              { id: "caramel_iced_12", name: "Caramel Macchiato (Iced)", prices: { "12oz": 79, "16oz": 89 } },
+              { id: "mocha_iced", name: "Mocha (Iced)", prices: { "12oz": 79, "16oz": 89 } },
+              { id: "affogato_iced", name: "Affogato Latte (Iced)", prices: { "12oz": 89, "16oz": 99 } },
+            ],
+            "Espresso Based (Hot)": [
+              { id: "hot_americano", name: "Hot Americano", prices: { "8oz": 59 } },
+              { id: "hot_spanish", name: "Hot Spanish Latte", prices: { "8oz": 79 } },
+            ],
+            "Non-Coffee": [
+              { id: "milkyberry", name: "Milky Berry", prices: { "12oz": 59, "16oz": 69 } },
+              { id: "classic_matcha", name: "Classic Matcha (unsweetened)", prices: { "12oz": 79, "16oz": 89 } },
+              { id: "creamy_matcha", name: "Creamy Matcha Latte", prices: { "12oz": 89, "16oz": 99 } },
+            ],
+            "Frappe Series": [
+              { id: "strawberry_bliss", name: "Strawberry Bliss (Frappe)", prices: { "16oz": 109 } },
+              { id: "frappe_caramel", name: "Caramel Macchiato (Frappe)", prices: { "16oz": 119 } },
+              { id: "java_chips", name: "Java Chips (Frappe)", prices: { "16oz": 119 } },
+              { id: "choco_hazelnut", name: "Choco Hazelnut (Frappe)", prices: { "16oz": 129 } },
+              { id: "kitkat_frappe", name: "KitKat (Frappe)", prices: { "16oz": 139 } },
+              { id: "biscoff_frappe", name: "Biscoff (Frappe)", prices: { "16oz": 149 } },
+            ],
+          },
+        },
+  
+        // SOLARIA'S MENU
+        {
+          name: "🍛 Solaria’s Menu",
+          subgroups: {
+            "Silog Meals": [
+              { id: "longsilog", name: "Longsilog", prices: { regular: 89 } },
+              { id: "cheesybacsilog", name: "Cheesy Bacsilog", prices: { regular: 99 } },
+              { id: "porksilog", name: "Porksilog", prices: { regular: 99 } },
+              { id: "tapsilog", name: "Tapsilog", prices: { regular: 109 } },
+            ],
+            "Chicken": [
+              { id: "2pc_wings", name: "2pcs Wings w/ Rice", prices: { regular: 89 } },
+              { id: "4pc_wings", name: "4pcs Wings w/ Rice", prices: { regular: 129 } },
+              { id: "6pc_wings", name: "6pcs Wings (A la carte)", prices: { regular: 149 } },
+            ],
+            "Pasta": [
+              { id: "spicy_tuna", name: "Spicy Tuna Pasta", prices: { regular: 89 } },
+              { id: "creamy_spaghetti", name: "Creamy Spaghetti", prices: { regular: 99 } },
+            ],
+            "Beef / Burger / Patty": [
+              { id: "burger_egg", name: "Burger Steak w/ Egg", prices: { regular: 99 } },
+              { id: "double_patty", name: "Double Patty Burger Steak", prices: { regular: 129 } },
+              { id: "double_patty_egg", name: "Double Patty Burger Steak w/ Egg", prices: { regular: 139 } },
+            ],
+          },
+        },
+      ];
+  
+      /**********************
+       * App state
+       **********************/
+      const container = document.getElementById('menu-container');
+      const orderListEl = document.getElementById('order-list');
+      const totalEl = document.getElementById('total');
+      const clearBtn = document.getElementById('clear-order');
+      let order = {}; // key => { name, price, qty }
+  
+      /**********************
+       * Build UI: create sections + subgroups + items
+       **********************/
+      function buildMenu() {
+        menus.forEach((menu, mIndex) => {
+          const section = document.createElement('section');
+          section.className = 'menu-section';
+  
+          // header
+          const header = document.createElement('div');
+          header.className = 'menu-header';
+          header.innerHTML = `<span>${menu.name}</span><span id="icon-${mIndex}">▼</span>`;
+          section.appendChild(header);
+  
+          // content (collapsible)
+          const content = document.createElement('div');
+          content.className = 'menu-content';
+          content.style.display = 'none';
+          content.style.marginTop = '10px';
+  
+          Object.entries(menu.subgroups).forEach(([subName, items]) => {
+            const subgroup = document.createElement('div');
+            subgroup.className = 'menu-subgroup';
+            subgroup.innerHTML = `<h3 class="text-base font-semibold" style="margin-bottom:8px">${subName}</h3>`;
+  
+            const grid = document.createElement('div');
+            grid.className = 'items-grid';
+  
+            items.forEach(item => {
+              const card = document.createElement('div');
+              card.className = 'menu-item';
+  
+              // build size options (value is price)
+              const sizeOptions = Object.entries(item.prices)
+                .map(([size, price]) => `<option value="${price}">${size} - ₱${price}</option>`)
+                .join('');
+  
+              card.innerHTML = `
+                <h4>${item.name}</h4>
+                <div style="margin-bottom:8px;">
+                  <select id="size-${item.id}">${sizeOptions}</select>
+                </div>
+                <div style="margin-bottom:8px;">
+                  <input id="qty-${item.id}" type="number" min="1" value="1" />
+                </div>
+                <button class="btn btn-add" onclick="addToOrder('${item.id}','${escapeHtml(item.name)}')">Add</button>
+              `;
+  
+              grid.appendChild(card);
+            });
+  
+            subgroup.appendChild(grid);
+            content.appendChild(subgroup);
+          });
+  
+          header.addEventListener('click', () => {
+            const visible = content.style.display === 'block';
+            content.style.display = visible ? 'none' : 'block';
+            document.getElementById(`icon-${mIndex}`).textContent = visible ? '▼' : '▲';
+          });
+  
+          section.appendChild(content);
+          container.appendChild(section);
+        });
+      }
+  
+      // escape single quotes to keep inline onclick safe
+      function escapeHtml(s) {
+        return s.replace(/'/g, "\\'");
+      }
+  
+      /**********************
+       * Add to order
+       **********************/
+      function addToOrder(id, name) {
+        const sizeSel = document.getElementById(`size-${id}`);
+        if (!sizeSel) return;
+        const price = parseInt(sizeSel.value);
+        const sizeLabel = sizeSel.options[sizeSel.selectedIndex].text.split(' - ')[0];
+        const qtyInput = document.getElementById(`qty-${id}`);
+        let qty = 1;
+        if (qtyInput) qty = parseInt(qtyInput.value) || 1;
+  
+        const key = `${id}__${sizeLabel}`; // unique per size
+        if (!order[key]) {
+          order[key] = { name: `${name} (${sizeLabel})`, price, qty };
+        } else {
+          order[key].qty += qty;
+        }
+        renderOrder();
+      }
+  
+      /**********************
+       * Render order UI
+       **********************/
+      function renderOrder() {
+        orderListEl.innerHTML = '';
+        let total = 0;
+        for (const key in order) {
+          const it = order[key];
+          total += it.price * it.qty;
+  
+          const li = document.createElement('li');
+          li.className = 'order-item';
+          li.innerHTML = `
+            <div>
+              <div style="font-weight:600">${it.name}</div>
+              <div class="small">₱${it.price} each</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <input type="number" min="1" value="${it.qty}" style="width:64px;padding:6px;border-radius:8px;background:#0b0b0b;color:#fff;border:1px solid #222"
+                onchange="updateQty('${key}', this.value)" />
+              <button class="btn-remove btn-remove-inline" onclick="removeItem('${key}')" title="Remove">✕</button>
+            </div>
+          `;
+          orderListEl.appendChild(li);
+        }
+        totalEl.textContent = total;
+      }
+  
+      function updateQty(key, newQty) {
+        const q = parseInt(newQty);
+        if (!q || q <= 0) {
+          delete order[key];
+        } else {
+          order[key].qty = q;
+        }
+        renderOrder();
+      }
+  
+      function removeItem(key) {
+        delete order[key];
+        renderOrder();
+      }
+  
+      clearBtn.addEventListener('click', () => {
+        order = {};
+        renderOrder();
+      });
+  
+      // initial build
+      buildMenu();
+  
+      // expose functions globally because of inline onclick attributes
+      window.addToOrder = addToOrder;
+      window.updateQty = updateQty;
+      window.removeItem = removeItem;
+  
+    </script>
+  </body>
+  </html>
