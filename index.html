@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solaria Cafe</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #111; /* deep black */
+      color: #f9f9f9;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    h1, h2, h3 {
+      color: #d4af37; /* gold */
+      letter-spacing: 1px;
+    }
+
+    .menu-section {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .menu-section:hover {
+      border-color: #d4af37;
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+    }
+
+    .menu-header {
+      background: linear-gradient(90deg, rgba(212, 175, 55, 0.3), transparent);
+      color: #f9f9f9;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 1.5rem;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    select, input {
+      background: #222;
+      color: white;
+      border: 1px solid #555;
+      border-radius: 6px;
+      padding: 4px;
+    }
+
+    select:focus, input:focus {
+      outline: none;
+      border-color: #d4af37;
+    }
+
+    button {
+      transition: all 0.3s ease;
+    }
+
+    .add-btn {
+      background: #d4af37;
+      color: #111;
+      font-weight: 600;
+    }
+
+    .add-btn:hover {
+      background: #c49b28;
+    }
+
+    .remove-btn {
+      background: #c0392b;
+    }
+
+    .remove-btn:hover {
+      background: #e74c3c;
+    }
+
+    .clear-btn {
+      background: #d4af37;
+      color: #111;
+      font-weight: bold;
+    }
+
+    .clear-btn:hover {
+      background: #c49b28;
+    }
+
+    .order-card {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 12px;
+    }
+
+    .gold-border {
+      border-color: #d4af37;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen">
+  <div class="max-w-5xl mx-auto p-6">
+    <h1 class="text-4xl font-bold text-center mb-10">☕ Solaria Cafe</h1>
+
+    <div id="menu-container" class="space-y-6"></div>
+
+    <!-- ORDER SUMMARY -->
+    <div class="mt-10 p-5 order-card shadow-lg rounded-lg">
+      <h2 class="text-2xl font-semibold mb-3">🧾 Order Summary</h2>
+      <ul id="order-list" class="mb-3 text-gray-200 space-y-2"></ul>
+      <p class="text-lg font-bold text-gold">Total: ₱<span id="total">0</span></p>
+      <button id="clear-order" class="mt-3 clear-btn px-4 py-2 rounded">Clear Order</button>
+    </div>
+  </div>
+
+  <script>
+    const menus = [
+      {
+        name: "🍹 Beverages Menu",
+        subgroups: {
+          "Espresso Based (Iced)": [
+            { id: "spanishlatte", name: "Spanish Latte", prices: { "12oz": 69, "16oz": 79 } },
+            { id: "caramelmacchiato", name: "Caramel Macchiato", prices: { "12oz": 79, "16oz": 89 } },
+            { id: "mocha", name: "Mocha", prices: { "12oz": 79, "16oz": 89 } },
+            { id: "affogato", name: "Affogato Latte", prices: { "12oz": 89, "16oz": 99 } },
+          ],
+          "Espresso Based (Hot)": [
+            { id: "hotamericano", name: "Hot Americano", prices: { "8oz": 59 } },
+            { id: "hotspanishlatte", name: "Hot Spanish Latte", prices: { "8oz": 79 } },
+          ],
+          "Non-Coffee": [
+            { id: "milkyberry", name: "Milky Berry", prices: { "12oz": 59, "16oz": 69 } },
+            { id: "classicmatcha", name: "Classic Matcha (unsweetened)", prices: { "12oz": 79, "16oz": 89 } },
+            { id: "creamymatcha", name: "Creamy Matcha Latte", prices: { "12oz": 89, "16oz": 99 } },
+          ],
+          "Frappe Series": [
+            { id: "strawberry", name: "Strawberry Bliss", prices: { "16oz": 109 } },
+            { id: "frappecaramel", name: "Caramel Macchiato", prices: { "16oz": 119 } },
+            { id: "javachips", name: "Java Chips", prices: { "16oz": 119 } },
+            { id: "chocohazelnut", name: "Choco Hazelnut", prices: { "16oz": 129 } },
+            { id: "kitkat", name: "KitKat", prices: { "16oz": 139 } },
+            { id: "biscoff", name: "Biscoff", prices: { "16oz": 149 } },
+          ],
+        },
+      },
+      {
+        name: "🍛 Solaria’s Menu",
+        subgroups: {
+          "Silog": [
+            { id: "longsilog", name: "Longsilog", prices: { regular: 89 } },
+            { id: "cheesybacsilog", name: "Cheesy Bacsilog", prices: { regular: 99 } },
+            { id: "porksilog", name: "Porksilog", prices: { regular: 99 } },
+            { id: "tapsilog", name: "Tapsilog", prices: { regular: 109 } },
+          ],
+          "Chicken": [
+            { id: "2pcwings", name: "2pcs Wings w/ Rice", prices: { regular: 89 } },
+            { id: "4pcwings", name: "4pcs Wings w/ Rice", prices: { regular: 129 } },
+            { id: "6pcwings", name: "6pcs Wings Alacarte", prices: { regular: 149 } },
+          ],
+          "Pasta": [
+            { id: "spicytuna", name: "Spicy Tuna Pasta", prices: { regular: 89 } },
+            { id: "creamypasta", name: "Creamy Spaghetti", prices: { regular: 99 } },
+          ],
+          "Beef Patty": [
+            { id: "burgersteakegg", name: "Burger Steak w/ Egg", prices: { regular: 99 } },
+            { id: "doublepatty", name: "Double Patty Burger Steak", prices: { regular: 129 } },
+            { id: "doublepattyegg", name: "Double Patty Burger Steak w/ Egg", prices: { regular: 139 } },
+          ],
+        },
+      },
+    ];
+
+    const container = document.getElementById("menu-container");
+    const orderList = document.getElementById("order-list");
+    const totalEl = document.getElementById("total");
+    const clearOrderBtn = document.getElementById("clear-order");
+    let order = {};
+
+    menus.forEach((menu, i) => {
+      const section = document.createElement("div");
+      section.className = "menu-section";
+
+      const header = document.createElement("button");
+      header.className = "menu-header";
+      header.innerHTML = `<span>${menu.name}</span><span id="icon-${i}">▼</span>`;
+
+      const content = document.createElement("div");
+      content.className = "space-y-4 pl-4";
+      content.style.display = "none";
+
+      Object.entries(menu.subgroups).forEach(([subName, items]) => {
+        const subgroupDiv = document.createElement("div");
+        subgroupDiv.innerHTML = `<h3 class="text-xl font-semibold mt-3">${subName}</h3>`;
+        const itemsDiv = document.createElement("div");
+        itemsDiv.className = "grid grid-cols-2 md:grid-cols-3 gap-3 mt-2";
+
+        items.forEach((item) => {
+          const card = document.createElement("div");
+          card.className = "bg-[#1a1a1a] border gold-border rounded-lg p-3 text-center hover:shadow-lg transition";
+
+          const sizeOptions = Object.entries(item.prices)
+            .map(([size, price]) => `<option value="${price}">${size} - ₱${price}</option>`)
+            .join("");
+
+          card.innerHTML = `
+            <h4 class="font-medium text-gold">${item.name}</h4>
+            <select id="size-${item.id}" class="w-full mb-2">${sizeOptions}</select>
+            <input id="qty-${item.id}" type="number" min="1" value="1" class="w-16 text-center mb-2">
+            <button onclick="addToOrder('${item.id}', '${item.name}')" class="add-btn px-3 py-1 rounded">Add</button>
+          `;
+          itemsDiv.appendChild(card);
+        });
+
+        subgroupDiv.appendChild(itemsDiv);
+        content.appendChild(subgroupDiv);
+      });
+
+      header.addEventListener("click", () => {
+        const visible = content.style.display === "block";
+        content.style.display = visible ? "none" : "block";
+        document.getElementById(`icon-${i}`).textContent = visible ? "▼" : "▲";
+      });
+
+      section.appendChild(header);
+      section.appendChild(content);
+      container.appendChild(section);
+    });
+
+    function addToOrder(id, name) {
+      const sizeSelect = document.getElementById(`size-${id}`);
+      const price = parseInt(sizeSelect.value);
+      const sizeLabel = sizeSelect.options[sizeSelect.selectedIndex].text.split(" - ")[0];
+      const qty = parseInt(document.getElementById(`qty-${id}`).value) || 1;
+      const key = id + "_" + sizeLabel;
+      if (!order[key]) order[key] = { name: `${name} (${sizeLabel})`, price, qty };
+      else order[key].qty += qty;
+      renderOrder();
+    }
+
+    function renderOrder() {
+      orderList.innerHTML = "";
+      let total = 0;
+
+      for (const key in order) {
+        const { name, price, qty } = order[key];
+        total += price * qty;
+
+        const li = document.createElement("li");
+        li.className = "flex justify-between items-center bg-[#1a1a1a] p-2 rounded border gold-border";
+
+        li.innerHTML = `
+          <div>
+            <span class="font-medium">${name}</span><br>
+            <span class="text-sm text-gray-400">₱${price} each</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="number" min="1" value="${qty}" class="w-16 text-center border rounded bg-[#222] text-white"
+              onchange="updateQuantity('${key}', this.value)">
+            <button onclick="removeItem('${key}')" class="remove-btn px-2 py-1 rounded">✕</button>
+          </div>
+        `;
+        orderList.appendChild(li);
+      }
+      totalEl.textContent = total;
+    }
+
+    function updateQuantity(key, newQty) {
+      const qty = parseInt(newQty);
+      if (qty <= 0) delete order[key];
+      else order[key].qty = qty;
+      renderOrder();
+    }
+
+    function removeItem(key) {
+      delete order[key];
+      renderOrder();
+    }
+
+    clearOrderBtn.addEventListener("click", () => {
+      order = {};
+      renderOrder();
+    });
+  </script>
+</body>
+</html>
