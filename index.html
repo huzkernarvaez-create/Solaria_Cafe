@@ -344,7 +344,38 @@
     };
 
     document.getElementById("clear").onclick = () => { order = {}; renderOrder(); };
-    document.getElementById("checkout").onclick = () => alert("Checkout feature coming soon!");
+   document.getElementById("checkout").onclick = async () => {
+  if (Object.keys(order).length === 0) {
+    alert("No items to checkout!");
+    return;
+  }
+
+  const items = Object.values(order).map(it => ({
+    name: it.name,
+    size: it.name.match(/\((.*?)\)/)?.[1] || "N/A",
+    qty: it.qty,
+    price: it.price
+  }));
+
+  const payload = { items };
+
+  try {
+    const response = await fetch("https://script.google.com/macros/s/AKfycbxV0IuZRcyAzVtVQa8qjTkk0X3WxI34o9h4lu-SQu2Vkx95VPkrvqo42DdEOiVxW6wC/exec", {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    alert("✅ Order saved to Google Sheet!");
+    order = {};
+    renderOrder();
+  } catch (err) {
+    alert("❌ Failed to save order. Check your Apps Script deployment.");
+    console.error(err);
+  }
+};
+
   </script>
 </body>
 </html>
