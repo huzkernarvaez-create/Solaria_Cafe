@@ -376,7 +376,7 @@
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpA8-QFEKMBCRCsfJ06RLYtddaabnQdtuawJLbL2-9rVxy3krFfNxrZ5ok2pW3Qfyr/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyP_mBupguL5FKXxzbRUlMiUxZWI0wK8QvvFaCILIuIWXvXZCwziL1TgZ9-s8ct0iUH/exec";
     let selectedRowIndex = null;
 
     async function loadMenu() {
@@ -475,13 +475,16 @@
     async function addMenu() {
       const payload = {
         action: "addMenu",
-        Category: document.getElementById('cCategory').value,
-        Subgroup: document.getElementById('cSubgroup').value,
-        "Item ID": document.getElementById('cItemID').value,
-        "Item Name": document.getElementById('cItemName').value,
-        Size: document.getElementById('cSize').value,
-        Price: document.getElementById('cPrice').value
+        Category: document.getElementById('cCategory').value.trim(),
+        Subgroup: document.getElementById('cSubgroup').value.trim(),
+        "Item ID": document.getElementById('cItemID').value.trim(),
+        "Item Name": document.getElementById('cItemName').value.trim(),
+        Size: document.getElementById('cSize').value.trim(),
+        Price: document.getElementById('cPrice').value.trim()
       };
+      
+      // Debug: Log what we're sending
+      console.log('Sending payload:', payload);
       
       if (!payload["Item Name"] || !payload.Price) {
         alert('❌ Item Name and Price are required!');
@@ -495,17 +498,21 @@
           headers: {"Content-Type": "application/json"}, 
           body: JSON.stringify(payload) 
         });
-        alert('✅ Item added successfully!');
         
-        // Clear add form
-        document.getElementById('cCategory').value = '';
-        document.getElementById('cSubgroup').value = '';
-        document.getElementById('cItemID').value = '';
-        document.getElementById('cItemName').value = '';
-        document.getElementById('cSize').value = '';
-        document.getElementById('cPrice').value = '';
-        
-        loadMenu();
+        // Wait a moment for the sheet to update
+        setTimeout(() => {
+          alert('✅ Item added successfully! Check the sheet to verify.');
+          
+          // Clear add form
+          document.getElementById('cCategory').value = '';
+          document.getElementById('cSubgroup').value = '';
+          document.getElementById('cItemID').value = '';
+          document.getElementById('cItemName').value = '';
+          document.getElementById('cSize').value = '';
+          document.getElementById('cPrice').value = '';
+          
+          loadMenu();
+        }, 1000);
       } catch (err) {
         alert('❌ Error adding item');
         console.error(err);
